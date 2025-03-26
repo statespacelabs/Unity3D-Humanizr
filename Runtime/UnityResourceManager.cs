@@ -33,16 +33,16 @@ namespace TNRD.Humanizr
         private Dictionary<string, string> GetCultureData(CultureInfo culture)
         {
             var path = $"Humanizr/{culture.Name}/resources.json";
-            var asset = Addressables.LoadAssetAsync<TextAsset>(path).WaitForCompletion();
-            if (asset != null)
+            if (Addressables.LoadResourceLocationsAsync(path).WaitForCompletion().Count > 0)
             {
+                var asset = Addressables.LoadAssetAsync<TextAsset>(path).WaitForCompletion();
                 return ParseAndCacheJson(culture.Name, asset.text);
             }
             
             path = $"Humanizr/{culture.Parent.Name}/resources.json";
-            asset = Addressables.LoadAssetAsync<TextAsset>(path).WaitForCompletion();
-            if (asset != null)
+            if (Addressables.LoadResourceLocationsAsync(path).WaitForCompletion().Count > 0)
             {
+                var asset = Addressables.LoadAssetAsync<TextAsset>(path).WaitForCompletion();
                 return ParseAndCacheJson(culture.Name, asset.text);
             }
 
