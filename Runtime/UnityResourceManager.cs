@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Resources;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace TNRD.Humanizr
 {
@@ -28,19 +29,20 @@ namespace TNRD.Humanizr
             return string.Empty;
         }
 
+        // TODO implement async version to avoid WaitForCompletion
         private Dictionary<string, string> GetCultureData(CultureInfo culture)
         {
-            var path = $"Humanizr/{culture.Name}/resources";
-            var asset = Resources.Load<TextAsset>(path);
-            if (asset != null)
+            var path = $"Humanizr/{culture.Name}/resources.json";
+            if (Addressables.LoadResourceLocationsAsync(path).WaitForCompletion().Count > 0)
             {
+                var asset = Addressables.LoadAssetAsync<TextAsset>(path).WaitForCompletion();
                 return ParseAndCacheJson(culture.Name, asset.text);
             }
             
-            path = $"Humanizr/{culture.Parent.Name}/resources";
-            asset = Resources.Load<TextAsset>(path);
-            if (asset != null)
+            path = $"Humanizr/{culture.Parent.Name}/resources.json";
+            if (Addressables.LoadResourceLocationsAsync(path).WaitForCompletion().Count > 0)
             {
+                var asset = Addressables.LoadAssetAsync<TextAsset>(path).WaitForCompletion();
                 return ParseAndCacheJson(culture.Name, asset.text);
             }
 
